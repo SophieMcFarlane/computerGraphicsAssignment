@@ -376,6 +376,60 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 
   modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  // Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-1.30, 0.9, 1.9);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.20, 1.6, 0.2); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 1.0, 1.0, 1.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  // Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(1.30, 0.9, 1.9);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.20, 1.6, 0.2); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 255/256, 255/256, 256/256);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  // Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(0, -0.85, 1.9);  // Translation (No translation is supported here)
+  modelMatrix.scale(1.50, 0.15, 0.2); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 1.0, 1.0, 1.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+
+  modelMatrix = popMatrix();
 }
 
 function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
