@@ -383,7 +383,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0, 1.7, 3.0);  // Translation (No translation is supported here)
+  modelMatrix.translate(0, 1.7, 2.0);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.6, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -402,7 +402,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.2, 1.7, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.2, 1.7, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.01, 0.6, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -421,7 +421,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.2, 1.7, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.2, 1.7, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.01, 0.6, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -440,7 +440,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate#
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0, 1.7, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0, 1.7, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -459,7 +459,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0, 2, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0, 2, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -478,7 +478,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.0, 1.4, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.0, 1.4, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -496,7 +496,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0, 0.1, 3.0);  // Translation (No translation is supported here)
+  modelMatrix.translate(0, 0.1, 2.0);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.6, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -515,7 +515,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.2, 0.1, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.2, 0.1, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.01, 0.6, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -534,7 +534,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
    modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.2, 0.1, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.2, 0.1, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.01, 0.6, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -553,7 +553,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0, 0.1, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0, 0.1, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -572,7 +572,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0, -0.2, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0, -0.2, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -591,7 +591,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.0, 0.4, 3.01);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.0, 0.4, 2.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -609,7 +609,7 @@ function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.3, -1.7, 1.5);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.3, -1.7, 1.0);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.5, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -627,7 +627,7 @@ function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.3, -1.7, 1.51);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.3, -1.7, 1.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.5, 0.01, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -644,7 +644,7 @@ function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(0.3, -1.7, 1.51);  // Translation (No translation is supported here)
+  modelMatrix.translate(0.3, -1.7, 1.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.01, 0.5, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -664,7 +664,7 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.85, -2.20, 1.5);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.85, -2.20, 1.0);  // Translation (No translation is supported here)
   modelMatrix.scale(0.3, 0.80, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -683,7 +683,7 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.85, -1.25, 1.51);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.85, -1.25, 1.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.3, 0.10, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -703,7 +703,7 @@ function drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(1.15, -1.7, 1.5);  // Translation (No translation is supported here)
+  modelMatrix.translate(1.15, -1.7, 1.0);  // Translation (No translation is supported here)
   modelMatrix.scale(0.25, 0.35, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
