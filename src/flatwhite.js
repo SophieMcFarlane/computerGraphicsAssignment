@@ -3,6 +3,7 @@
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'attribute vec4 a_Color;\n' +
+  'attribute vec2 a_TextCoords;\n' +
   'attribute vec4 a_Normal;\n' +        // Normal
   'uniform mat4 u_ModelMatrix;\n' +
   'uniform mat4 u_NormalMatrix;\n' +
@@ -11,9 +12,11 @@ var VSHADER_SOURCE =
   'uniform vec3 u_LightColor;\n' +     // Light color
   'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
   'varying vec4 v_Color;\n' +
+  'varying vec2 v_TextCoords;\n' +
   'uniform bool u_isLighting;\n' +
   'void main() {\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
+  '  v_TextCoords = a_TextCoords;\n' +
   '  if(u_isLighting)\n' + 
   '  {\n' +
   '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
@@ -32,9 +35,19 @@ var FSHADER_SOURCE =
   '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
   '#endif\n' +
+  'uniform bool u_UseTextures;\n' +
+  'uniform sampler2D u_Sampler;\n' +
+  'varying vec2 v_TextCoords;\n' +
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
+  //'  gl_FragColor = v_Color;\n' +
+  '  if(u_UseTextures)\n' + 
+  '  {\n' +
+  '     gl_FragColor = texture2D(u_Sampler, v_TextCoords);\n' +  '  }\n' +
+  '  else\n' +
+  '  {\n' +
+  '     gl_FragColor = v_Color;\n' +
+  '  }\n' + 
   '}\n';
 
 var modelMatrix = new Matrix4(); // The model matrix
@@ -45,6 +58,10 @@ var g_normalMatrix = new Matrix4();  // Coordinate transformation matrix for nor
 var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
+
+var u_Sampler;
+
+var INIT_TEXTURE_COUNT =0, TEXTURES_ON = true;
 
 function main() {
   // Retrieve <canvas> element
@@ -63,6 +80,12 @@ function main() {
     return;
   }
 
+  //Initialise textures
+  if(!initTextures(gl)){
+    console.log('Failed to initialise textures');
+    return;
+  }
+
   // Set clear color and enable hidden surface removal
   gl.clearColor(102/256, 204/256, 255/256, 1.0);
   gl.enable(gl.DEPTH_TEST);
@@ -77,16 +100,18 @@ function main() {
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+  var u_UseTextures = gl.getUniformLocation(gl.program, 'u_UseTextures');
 
   // Trigger using lighting or not
   var u_isLighting = gl.getUniformLocation(gl.program, 'u_isLighting'); 
 
   if (!u_ModelMatrix || !u_ViewMatrix || !u_NormalMatrix ||
       !u_ProjMatrix || !u_LightColor || !u_LightDirection ||
-      !u_isLighting ) { 
+      !u_isLighting || !u_UseTextures) { 
     console.log('Failed to Get the storage locations of u_ModelMatrix, u_ViewMatrix, and/or u_ProjMatrix');
     return;
   }
+
 
   // Set the light color (white)
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
@@ -170,6 +195,16 @@ function initCubeVertexBuffers(gl, r, g, b) {
     0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
   ]);
 
+  // Texture Coordinates - front mirrors back
+    var textCoords = new Float32Array([
+        1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v0-v1-v2-v3 front
+        0.0, 1.0,    0.0, 0.0,   1.0, 0.0,   1.0, 1.0,  // v0-v3-v4-v5 right
+        1.0, 0.0,    1.0, 1.0,   0.0, 1.0,   0.0, 0.0,  // v0-v5-v6-v1 up
+        1.0, 1.0,    0.0, 1.0,   0.0, 0.0,   1.0, 0.0,  // v1-v6-v7-v2 left
+        0.0, 0.0,    1.0, 0.0,   1.0, 1.0,   0.0, 1.0,  // v7-v4-v3-v2 down
+        1.0, 0.0,    0.0, 0.0,   0.0, 1.0,   1.0, 1.0   // v4-v7-v6-v5 back
+    ]);
+
 
   // Indices of the vertices
   var indices = new Uint8Array([
@@ -186,6 +221,7 @@ function initCubeVertexBuffers(gl, r, g, b) {
   if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
   if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  if(!initArrayBuffer(gl, 'a_TextCoords', textCoords, 2, gl.FLOAT)) return -1;
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
@@ -224,6 +260,7 @@ function initArrayBuffer (gl, attribute, data, num, type) {
 
   return true;
 }
+
 
 function initAxesVertexBuffers(gl) {
 
@@ -288,6 +325,10 @@ function popMatrix(){ // Retrieve the matrix from the array
 
 function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
+  // if (INIT_TEXTURE_COUNT < 1){
+  //   return; //Don't draw scene until all textures have been loaded
+  // }
+
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -322,6 +363,12 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
 
 function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting){
 
+  //Texture must be an integer i such that gl.Texturei is used
+  // if (texture != null && TEXTURES_ON){
+  //   gl.uniform1i(u_Sampler);
+  //   gl.uniform1i(u_UseTextures, 1);
+  // }
+
   pushMatrix(modelMatrix);
 
   // Pass the model matrix to the uniform variable
@@ -337,6 +384,11 @@ function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
   modelMatrix = popMatrix();
+
+  //Turn off texture if used
+  // if(texture != null && TEXTURES_ON){
+  //   gl.uniform1i(u_UseTextures, 0);
+  // }
 
 }
 
@@ -771,4 +823,49 @@ function drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
 
   modelMatrix = popMatrix();
 
+}
+
+function initTextures(gl){
+
+  //Get the storage location of u_Sampler
+  u_Sampler = gl.getUniformLocation(gl.program, 'u_Sampler');
+  if(!u_Sampler){
+    console.log('Failed to get the storage location of u_Sampler');
+    return false;
+  }
+
+  //Setup texture mappings
+  createTexture(gl, 'beech.jpeg', gl.TEXTURE0);
+  return true;
+}
+
+function createTexture(gl, name, id){
+   var texture = gl.createTexture();
+   if(!texture){
+     console.log('Failed to create texture object');
+     return false;
+   }
+
+   var image = new Image();
+   if(!image){
+     console.log('Failed to create the image object');
+     return false;
+   }
+
+   image.onload = function(){
+     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); //Flip the image y-axis
+     gl.activeTexture(id); //Assign to right texture
+
+     gl.bindTexture(gl.TEXTURE_2D, texture);
+
+     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+     gl.generateMipmap(gl.TEXTURE_2D);
+
+     gl.clear(gl.COLOR_BUFFER_BIT); //Clear color buffer
+
+     INIT_TEXTURE_COUNT++; //make sure all textures are loaded
+   };
+   
+   image.src = name;
 }
