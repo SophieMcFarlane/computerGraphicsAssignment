@@ -149,6 +149,8 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
     case 37: // Left arrow key -> the negative rotation of arm1 around the y-axis
       g_yAngle = (g_yAngle - ANGLE_STEP) % 360;
       break;
+    case 55: // 7 -> Toggle textures
+      TEXTURES_ON = !TEXTURES_ON;
     default: return; // Skip drawing at no effective action
   }
 
@@ -866,6 +868,6 @@ function createTexture(gl, name, id){
 
      INIT_TEXTURE_COUNT++; //make sure all textures are loaded
    };
-   
+
    image.src = name;
 }
