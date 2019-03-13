@@ -60,8 +60,12 @@ var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
 
 var u_Sampler;
+var u_UseTextures;
+
+var camera = 20;
 
 var INIT_TEXTURE_COUNT =0, TEXTURES_ON = true;
+var LIGHTING_ON = true;
 
 function main() {
   // Retrieve <canvas> element
@@ -100,7 +104,7 @@ function main() {
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
-  var u_UseTextures = gl.getUniformLocation(gl.program, 'u_UseTextures');
+  u_UseTextures = gl.getUniformLocation(gl.program, 'u_UseTextures');
 
   // Trigger using lighting or not
   var u_isLighting = gl.getUniformLocation(gl.program, 'u_isLighting'); 
@@ -121,21 +125,21 @@ function main() {
   gl.uniform3fv(u_LightDirection, lightDirection.elements);
 
   // Calculate the view matrix and the projection matrix
-  viewMatrix.setLookAt(0, 0, 15, 0, 0, -100, 0, 1, 0);
+  //viewMatrix.setLookAt(0, 0, camera, 0, 0, -100, 0, 1, 0); 
   projMatrix.setPerspective(30, canvas.width/canvas.height, 1, 100);
   // Pass the model, view, and projection matrix to the uniform variable respectively
-  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
+  //gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   gl.uniformMatrix4fv(u_ProjMatrix, false, projMatrix.elements);
 
 
   document.onkeydown = function(ev){
-    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMatrix);
   };
 
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMatrix);
 }
 
-function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
+function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMatrix) {
   switch (ev.keyCode) {
     case 40: // Up arrow key -> the positive rotation of arm1 around the y-axis
       g_xAngle = (g_xAngle + ANGLE_STEP) % 360;
@@ -151,11 +155,21 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
       break;
     case 55: // 7 -> Toggle textures
       TEXTURES_ON = !TEXTURES_ON;
+      break;
+    case  56: // 8 -> Toggle lightning
+      LIGHTING_ON = !LIGHTING_ON;
+      break;
+    case 57: // 9 -> Zoom the camera out
+      camera = camera + 3;
+      break;
+    case 48: // 0 -> Zoom the camera in
+      camera = camera - 3;
+      break;
     default: return; // Skip drawing at no effective action
   }
 
   // Draw the scene
-  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMatrix);
 }
 
 
@@ -325,8 +339,13 @@ function popMatrix(){ // Retrieve the matrix from the array
   return g_matrixStack.pop();
 } 
 
-function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
+function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMatrix) {
 
+
+  // Calculate the view matrix and the projection matrix
+  viewMatrix.setLookAt(0, 0, camera, 0, 0, -100, 0, 1, 0); 
+  // Pass the model, view, and projection matrix to the uniform variable respectively
+  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   // if (INIT_TEXTURE_COUNT < 1){
   //   return; //Don't draw scene until all textures have been loaded
   // }
@@ -352,7 +371,13 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   // Draw x and y axes
   gl.drawArrays(gl.LINES, 0, n);
 
-  gl.uniform1i(u_isLighting, true); // Will apply lighting
+  console.log(LIGHTING_ON);
+  if(LIGHTING_ON){
+    gl.uniform1i(u_isLighting, true); // Will apply lighting
+  }else{
+    gl.uniform1i(u_isLighting, false); // wont apply lighting
+  }
+
 
 
   drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
@@ -363,13 +388,13 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting) {
   drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
 
-function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, texture){
 
   //Texture must be an integer i such that gl.Texturei is used
-  // if (texture != null && TEXTURES_ON){
-  //   gl.uniform1i(u_Sampler);
-  //   gl.uniform1i(u_UseTextures, 1);
-  // }
+  if (texture != null && TEXTURES_ON){
+    gl.uniform1i(u_Sampler, texture);
+    gl.uniform1i(u_UseTextures, true);
+  }
 
   pushMatrix(modelMatrix);
 
@@ -388,9 +413,9 @@ function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   modelMatrix = popMatrix();
 
   //Turn off texture if used
-  // if(texture != null && TEXTURES_ON){
-  //   gl.uniform1i(u_UseTextures, 0);
-  // }
+  if(texture != null && TEXTURES_ON){
+    gl.uniform1i(u_UseTextures, false);
+  }
 
 }
 
@@ -409,7 +434,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -427,7 +452,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -445,7 +470,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -463,7 +488,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -481,7 +506,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 }
@@ -501,7 +526,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -520,7 +545,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -539,7 +564,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -558,7 +583,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, null);
 
   modelMatrix = popMatrix();
 
@@ -577,7 +602,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -596,7 +621,7 @@ function drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 }
 
 function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
@@ -614,7 +639,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -633,7 +658,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -652,7 +677,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -671,7 +696,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -690,7 +715,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -709,7 +734,7 @@ function drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 }
 
 function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
@@ -727,7 +752,7 @@ function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
@@ -745,7 +770,7 @@ function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix=popMatrix();
 
@@ -762,12 +787,12 @@ function drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix=popMatrix();
 }
 
-function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting,){
   pushMatrix(modelMatrix);
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
@@ -782,7 +807,7 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
 
   modelMatrix = popMatrix();
 
@@ -801,7 +826,7 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 }
@@ -821,7 +846,7 @@ function drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
 
   modelMatrix = popMatrix();
 
