@@ -63,6 +63,7 @@ var u_Sampler;
 var u_UseTextures;
 
 var camera = 20;
+var carX = 0;
 
 var INIT_TEXTURE_COUNT =0, TEXTURES_ON = true;
 var LIGHTING_ON = true;
@@ -165,6 +166,12 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_
     case 48: // 0 -> Zoom the camera in
       camera = camera - 3;
       break;
+    case 65: // a -> Move car left
+      carX = carX - 0.25;
+      break;
+    case 68: // d -> Move car right
+      carX = carX + 0.25;
+      break;
     default: return; // Skip drawing at no effective action
   }
 
@@ -172,6 +179,46 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_
   draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMatrix);
 }
 
+function initOctagonVertexBuffers(gl, r, g, b){
+
+  var vertices = new Float32Array([
+    1.0, 0.0, 0.0,  0.71, 0.71, 0.0,  0.0, 1.0, 0.0,  -0.71, 0.71, 0.0,
+    -1.0, 0.0, 0.0,  -0.71, -0.71, 0.0,  0.0, -1.0, 0.0,  0.71, -0.71, 0.0
+  ]);
+  var n =8;
+
+  var colors = new Float32Array([
+    r, g, b, r, g, b, r, g, b, r, g, b,
+    r, g, b, r, g, b, r, g, b, r, g, b
+  ]);
+
+  var normals = new Float32Array([
+    0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,
+    0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0
+   ]);
+
+   // Indices of the vertices
+  var indices = new Uint8Array([
+     0, 1, 2, 3, 4, 5, 6, 7
+ ]);
+
+  // Write the vertex property to buffers (coordinates, colors and normals)
+  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+
+  // Write the indices to the buffer object
+  var indexBuffer = gl.createBuffer();
+  if (!indexBuffer) {
+    console.log('Failed to create the buffer object');
+    return false;
+  }
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+  
+  return indices.length;
+}
 
 function initCubeVertexBuffers(gl, r, g, b) {
   // Create a cube
@@ -386,6 +433,8 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMat
   drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
   drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
   drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
 }
 
 function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, texture){
@@ -406,8 +455,8 @@ function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, texture){
   g_normalMatrix.transpose();
   gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
 
-
-  // Draw the cube
+  console.log(n);
+    // Draw the cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
   modelMatrix = popMatrix();
@@ -417,6 +466,23 @@ function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, texture){
     gl.uniform1i(u_UseTextures, false);
   }
 
+}
+
+function drawOctagon(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+  pushMatrix(modelMatrix);
+
+  // Pass the model matrix to the uniform variable
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+   // Calculate the normal transformation matrix and pass it to u_NormalMatrix
+  g_normalMatrix.setInverseOf(modelMatrix);
+  g_normalMatrix.transpose();
+  gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
+
+  // Draw the octagon
+  gl.drawElements(gl.LINES, n, gl.UNSIGNED_BYTE, 0);
+
+  modelMatrix = popMatrix();
 }
 
 function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
@@ -850,6 +916,101 @@ function drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
 
   modelMatrix = popMatrix();
 
+}
+
+function drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(0, -3, 0);  // Translation (No translation is supported here)
+  modelMatrix.scale(5, 0, 5); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 102/256, 102/256, 102/256);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+}
+
+
+function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(3 + carX, -2.45, 3.5);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.65, 0.55, 0.55); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 1.0, 0.0, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(2.0 +carX, -2.7, 3.5);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.35, 0.325, 0.55); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 1.0, 0.0, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(2.325 +carX, -2.6, 3.5);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.0, 0.6, 0.55); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 204/256, 229/256, 255/256);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-3 +carX, -4.6, 3.5);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.0, 0.6, 0.55); // Scale
+
+  // Set the vertex coordinates and color (for the octagon)
+  var n = initOctagonVertexBuffers(gl, 0, 0, 1);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawOctagon(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+
+  modelMatrix = popMatrix();
 }
 
 function initTextures(gl){
