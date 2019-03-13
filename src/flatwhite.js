@@ -172,6 +172,9 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_
     case 68: // d -> Move car right
       carX = carX + 0.25;
       break;
+    case 54: // 6 -> Open door;
+      //g_yAngle = 90;
+      break;
     default: return; // Skip drawing at no effective action
   }
 
