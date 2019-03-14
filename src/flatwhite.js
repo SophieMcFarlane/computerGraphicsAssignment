@@ -14,6 +14,7 @@ var VSHADER_SOURCE =
   'varying vec4 v_Color;\n' +
   'varying vec2 v_TextCoords;\n' +
   'uniform bool u_isLighting;\n' +
+  'uniform vec3 u_AmbientLight;\n' + //Color of an ambient light
   'void main() {\n' +
   '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
   '  v_TextCoords = a_TextCoords;\n' +
@@ -23,7 +24,10 @@ var VSHADER_SOURCE =
   '     float nDotL = max(dot(normal, u_LightDirection), 0.0);\n' +
         // Calculate the color due to diffuse reflection
   '     vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;\n' +
-  '     v_Color = vec4(diffuse, a_Color.a);\n' +  '  }\n' +
+        //Calculate the color due to ambient reflection
+  '     vec3 ambient = u_AmbientLight * a_Color.rgb;\n' +
+        //Add surface colors due to diffuse and ambient reflection
+  '     v_Color = vec4(diffuse + ambient, a_Color.a);\n' +  '  }\n' +
   '  else\n' +
   '  {\n' +
   '     v_Color = a_Color;\n' +
@@ -100,7 +104,7 @@ function main() {
   }
 
   // Set clear color and enable hidden surface removal
-  gl.clearColor(102/256, 204/256, 255/256, 1.0);
+  gl.clearColor(0.0, 0.0, 0.1, 0.0);
   gl.enable(gl.DEPTH_TEST);
 
   // Clear color and depth buffer
@@ -113,6 +117,7 @@ function main() {
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+  var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
   u_UseTextures = gl.getUniformLocation(gl.program, 'u_UseTextures');
 
   // Trigger using lighting or not
@@ -120,7 +125,7 @@ function main() {
 
   if (!u_ModelMatrix || !u_ViewMatrix || !u_NormalMatrix ||
       !u_ProjMatrix || !u_LightColor || !u_LightDirection ||
-      !u_isLighting || !u_UseTextures) { 
+      !u_isLighting || !u_UseTextures || !u_AmbientLight) { 
     console.log('Failed to Get the storage locations of u_ModelMatrix, u_ViewMatrix, and/or u_ProjMatrix');
     return;
   }
@@ -128,6 +133,8 @@ function main() {
 
   // Set the light color (white)
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
+  //Set the ambient light
+  gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
   // Set the light direction (in the world coordinate)
   var lightDirection = new Vector3([0.5, 3.0, 4.0]);
   lightDirection.normalize();     // Normalize
@@ -1566,6 +1573,7 @@ function drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
 
 
 function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+
   pushMatrix(modelMatrix);
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
@@ -1625,6 +1633,7 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
   modelMatrix.translate(3.3 +carX, -2.8, 4.0);  // Translation (No translation is supported here)
+  modelMatrix.rotate(currentAngle, 0, 0, 1); // Rotate along x axis
   modelMatrix.scale(0.2, 0.2, 0.1); // Scale
 
   // Set the vertex coordinates and color (for the octagon)
@@ -1643,6 +1652,7 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
   modelMatrix.translate(2.1 +carX, -2.8, 4.0);  // Translation (No translation is supported here)
+  modelMatrix.rotate(currentAngle, 0, 0, 1); // Rotate along x axis
   modelMatrix.scale(0.2, 0.2, 0.1); // Scale
 
   // Set the vertex coordinates and color (for the octagon)
@@ -1661,6 +1671,7 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
   modelMatrix.translate(3.3 +carX, -2.8, 3.0);  // Translation (No translation is supported here)
+  modelMatrix.rotate(currentAngle, 0, 0, 1); // Rotate along x axis
   modelMatrix.scale(0.2, 0.2, 0.1); // Scale
 
   // Set the vertex coordinates and color (for the octagon)
@@ -1679,6 +1690,7 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
   modelMatrix.translate(2.1 +carX, -2.8, 3.0);  // Translation (No translation is supported here)
+  modelMatrix.rotate(currentAngle, 0, 0, 1); // Rotate along x axis
   modelMatrix.scale(0.2, 0.2, 0.1); // Scale
 
   // Set the vertex coordinates and color (for the octagon)
@@ -1696,7 +1708,6 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0);
-  modelMatrix.rotate(currentAngle, 0, 0, 1); // Rotate along x axis
   modelMatrix.translate(3.3 +carX, -2.8, 4.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.05, 0.05, 0.1); // Scale
 
