@@ -590,7 +590,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   modelMatrix.scale(0.20, 1.6, 0.2); // Scale
 
   // Set the vertex coordinates and color (for the cube)
-  var n = initCubeVertexBuffers(gl, 255/256, 255/256, 256/256);
+  var n = initCubeVertexBuffers(gl, 1.0, 1.0, 1.0);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -614,7 +614,7 @@ function drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 2);
 
   modelMatrix = popMatrix();
 
@@ -1485,7 +1485,7 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting,){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.85+x, -2.20, 1.0);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.85+x, -2.20, 1.02);  // Translation (No translation is supported here)
   modelMatrix.rotate(g_zAngle, 0, 1, 0); //Rotate along the y axis
   modelMatrix.scale(0.3, 0.80, 0.01); // Scale
 
@@ -1501,6 +1501,25 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting,){
   modelMatrix = popMatrix();
 
   pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-0.85, -2.20, 1.0);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.3, 0.80, 0.01); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 0.0, 0.0, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+
+
+  pushMatrix(modelMatrix);
 
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
@@ -1510,6 +1529,46 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting,){
 
   // Set the vertex coordinates and color (for the cube)
   var n = initCubeVertexBuffers(gl, 204/256, 229/256, 255/256);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-0.9 + x, -2.25, 1.03);  // Translation (No translation is supported here)
+  modelMatrix.rotate(g_zAngle, 0, 1, 0); //Rotate along the y axis
+  modelMatrix.scale(0.15, 0.05, 0.01); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 0.0, 0.0, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-0.9 + x, -2.25, 1.03);  // Translation (No translation is supported here)
+  modelMatrix.rotate(g_zAngle, 0, 1, 0); //Rotate along the y axis
+  modelMatrix.scale(0.05, 0.05, 0.01); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 0.0, 0.0, 0.0);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
@@ -1535,7 +1594,7 @@ function drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
 
   modelMatrix = popMatrix();
 
@@ -1574,7 +1633,7 @@ function drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 1);
 
   modelMatrix = popMatrix();
 }
@@ -1596,7 +1655,7 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 4);
 
   modelMatrix = popMatrix();
 
@@ -1614,7 +1673,7 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 4);
 
   modelMatrix = popMatrix();
 
@@ -1872,7 +1931,7 @@ function drawBench(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
 
   modelMatrix = popMatrix();
 
@@ -1890,7 +1949,7 @@ function drawBench(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
 
   modelMatrix = popMatrix();
 
@@ -1908,7 +1967,7 @@ function drawBench(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
     return;
   }
 
-  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, null);
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
 
   modelMatrix = popMatrix();
 
@@ -1943,7 +2002,11 @@ function initTextures(gl){
   }
 
   //Setup texture mappings
-  createTexture(gl, 'beech.jpeg', gl.TEXTURE0);
+  createTexture(gl, 'wood.jpg', gl.TEXTURE0);
+  createTexture(gl, 'pavement2.jpg', gl.TEXTURE1);
+  createTexture(gl, 'title.png', gl.TEXTURE2);
+  createTexture(gl, 'whiteWall.jpg', gl.TEXTURE3);
+  createTexture(gl, 'car.jpg', gl.TEXTURE4);
   return true;
 }
 
@@ -1990,5 +2053,6 @@ function animate(angle){
   g_last = now;
   //Update the current rotation angle (adjusted by the elapsed time)
   var newAngle = angle += (ANGLE_STEP * elapsed) / 1000.0;
+
   return newAngle %= 360;
 }
