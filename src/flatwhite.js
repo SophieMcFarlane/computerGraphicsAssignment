@@ -11,6 +11,7 @@ var VSHADER_SOURCE =
   'uniform mat4 u_ProjMatrix;\n' +
   'uniform vec3 u_LightColor;\n' +     // Light color
   'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
+  'uniform vec3 u_LightPosition;\n' +  //Position of the light source (in the world coordinate system)
   'varying vec4 v_Color;\n' +
   'varying vec2 v_TextCoords;\n' +
   'uniform bool u_isLighting;\n' +
@@ -21,6 +22,10 @@ var VSHADER_SOURCE =
   '  if(u_isLighting)\n' + 
   '  {\n' +
   '     vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
+        //Calculate the world coordinate of the vertex
+  '     vec4 vertexPosition = u_ModelMatrix * a_Position;\n' +
+        //Calculate the light direction and make it 1.0 in length
+  '     vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));\n' +
   '     float nDotL = max(dot(normal, u_LightDirection), 0.0);\n' +
         // Calculate the color due to diffuse reflection
   '     vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;\n' +
@@ -104,7 +109,7 @@ function main() {
   }
 
   // Set clear color and enable hidden surface removal
-  gl.clearColor(0.0, 0.0, 0.1, 0.0);
+  gl.clearColor(0.0, 0.0, 1.0, 0.0);
   gl.enable(gl.DEPTH_TEST);
 
   // Clear color and depth buffer
@@ -118,6 +123,7 @@ function main() {
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
   var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
+  var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
   u_UseTextures = gl.getUniformLocation(gl.program, 'u_UseTextures');
 
   // Trigger using lighting or not
@@ -133,6 +139,8 @@ function main() {
 
   // Set the light color (white)
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
+  //Set the position of the light source (in the world coordinate system)
+  gl.uniform3f(u_LightPosition, 0.0, 3.0, 4.0);
   //Set the ambient light
   gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
   // Set the light direction (in the world coordinate)
@@ -193,11 +201,11 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_
     case 68: // d -> Move car right
       carX = carX + 0.25;
       break;
-    case 54: // 6 -> Open door;
+    case 53: // 5 -> Open door;
       g_zAngle = 90;
       x= -0.35;
       break;
-     case 53: // 5 -> Close door;
+     case 54: // 6 -> Close door;
      g_zAngle =  0;
      x = 0;
      break;
