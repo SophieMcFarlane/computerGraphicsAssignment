@@ -58,15 +58,20 @@ var g_normalMatrix = new Matrix4();  // Coordinate transformation matrix for nor
 var ANGLE_STEP = 3.0;  // The increments of rotation angle (degrees)
 var g_xAngle = 0.0;    // The rotation x angle (degrees)
 var g_yAngle = 0.0;    // The rotation y angle (degrees)
+var g_zAngle = 0.0;
 
 var u_Sampler;
 var u_UseTextures;
 
-var camera = 20;
+var cameraX = 20;
+var cameraY = 0;
 var carX = 0;
 
 var INIT_TEXTURE_COUNT =0, TEXTURES_ON = true;
 var LIGHTING_ON = true;
+
+var rotateTranslate = 0;
+var x = 0;
 
 function main() {
   // Retrieve <canvas> element
@@ -160,11 +165,17 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_
     case  56: // 8 -> Toggle lightning
       LIGHTING_ON = !LIGHTING_ON;
       break;
-    case 57: // 9 -> Zoom the camera out
-      camera = camera + 3;
+    case 75: // k -> Zoom the camera out
+      cameraX = cameraX + 3;
       break;
-    case 48: // 0 -> Zoom the camera in
-      camera = camera - 3;
+    case 72: // i -> Zoom the camera in
+      cameraX = cameraX - 3;
+      break;
+    case 74: // j -> Move camera left
+      cameraY = cameraY -3;
+      break;
+    case 76: // l -> Move camera right
+      cameraY = cameraY +3;
       break;
     case 65: // a -> Move car left
       carX = carX - 0.25;
@@ -173,8 +184,13 @@ function keydown(ev, gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_
       carX = carX + 0.25;
       break;
     case 54: // 6 -> Open door;
-      //g_yAngle = 90;
+      g_zAngle = 90;
+      x= -0.35;
       break;
+     case 53: // 5 -> Close door;
+     g_zAngle =  0;
+     x = 0;
+     break;
     default: return; // Skip drawing at no effective action
   }
 
@@ -393,7 +409,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMat
 
 
   // Calculate the view matrix and the projection matrix
-  viewMatrix.setLookAt(0, 0, camera, 0, 0, -100, 0, 1, 0); 
+  viewMatrix.setLookAt(cameraY, 0, cameraX, 0, 0, -100, 0, 1, 0); 
   // Pass the model, view, and projection matrix to the uniform variable respectively
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   // if (INIT_TEXTURE_COUNT < 1){
@@ -1445,7 +1461,8 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting,){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.85, -2.20, 1.0);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.85+x, -2.20, 1.0);  // Translation (No translation is supported here)
+  modelMatrix.rotate(g_zAngle, 0, 1, 0); //Rotate along the y axis
   modelMatrix.scale(0.3, 0.80, 0.01); // Scale
 
   // Set the vertex coordinates and color (for the cube)
@@ -1913,6 +1930,8 @@ function createTexture(gl, name, id){
      console.log('Failed to create the image object');
      return false;
    }
+
+   image.crossOrigin = 'anonymous';
 
    image.onload = function(){
      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); //Flip the image y-axis
