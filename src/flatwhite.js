@@ -73,6 +73,9 @@ var LIGHTING_ON = true;
 var rotateTranslate = 0;
 var x = 0;
 
+var ANGLE_STEP = 10.0;
+var currentAngle = 0;
+
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
@@ -443,17 +446,23 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMat
     gl.uniform1i(u_isLighting, false); // wont apply lighting
   }
 
+  var tick = function(){
+    currentAngle = animate(currentAngle);
+    drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawBench(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    requestAnimationFrame(tick);
+  };
 
+  
 
-  drawBuilding(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawTopWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawMiddleWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawBottomWindow(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
-  drawBench(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+  tick();
 }
 
 function drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, texture){
@@ -1686,7 +1695,8 @@ function drawCar(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
   pushMatrix(modelMatrix);
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
-  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0);
+  modelMatrix.rotate(currentAngle, 0, 0, 1); // Rotate along x axis
   modelMatrix.translate(3.3 +carX, -2.8, 4.01);  // Translation (No translation is supported here)
   modelMatrix.scale(0.05, 0.05, 0.1); // Scale
 
@@ -1951,4 +1961,15 @@ function createTexture(gl, name, id){
    image.src = name;
 
    console.log(image);
+}
+
+var g_last = new Date().getTime();
+function animate(angle){
+  //Calculate the elapsed time
+  var now = new Date().getTime();
+  var elapsed = now - g_last;
+  g_last = now;
+  //Update the current rotation angle (adjusted by the elapsed time)
+  var newAngle = angle += (ANGLE_STEP * elapsed) / 1000.0;
+  return newAngle %= 360;
 }
