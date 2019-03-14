@@ -472,6 +472,7 @@ function draw(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting, canvas, u_ViewMat
     drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
     drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
     drawBench(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
+    drawBush(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting);
     requestAnimationFrame(tick);
   };
 
@@ -1563,7 +1564,7 @@ function drawDoor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting,){
   //Rotate, and then translate
   modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
   modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
-  modelMatrix.translate(-0.9 + x, -2.25, 1.03);  // Translation (No translation is supported here)
+  modelMatrix.translate(-0.65 + x, -2.25, 1.03);  // Translation (No translation is supported here)
   modelMatrix.rotate(g_zAngle, 0, 1, 0); //Rotate along the y axis
   modelMatrix.scale(0.05, 0.05, 0.01); // Scale
 
@@ -1616,6 +1617,116 @@ function drawBoard(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
 
   modelMatrix = popMatrix();
 
+}
+
+function drawBush(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(1.25, -2.75, 1.4);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.15, 0.20, 0.15); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 179/256, 80/256, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 6);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(1.25, -2.25, 1.4);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.025, 0.35, 0.15); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 179/256, 80/256, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(1.25, -1.95, 1.4);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.2, 0.2, 0.15); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 0, 1, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 5);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-0.325, -2.75, 1.4);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.15, 0.20, 0.15); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 179/256, 80/256, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 6);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-0.325, -2.25, 1.4);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.025, 0.35, 0.15); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 179/256, 80/256, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 0);
+
+  modelMatrix = popMatrix();
+
+  pushMatrix(modelMatrix);
+  //Rotate, and then translate
+  modelMatrix.setRotate(g_yAngle, 0, 1, 0); // Rotate along y axis
+  modelMatrix.rotate(g_xAngle, 1, 0, 0); // Rotate along x axis
+  modelMatrix.translate(-0.325, -1.95, 1.4);  // Translation (No translation is supported here)
+  modelMatrix.scale(0.2, 0.2, 0.15); // Scale
+
+  // Set the vertex coordinates and color (for the cube)
+  var n = initCubeVertexBuffers(gl, 0, 1, 0.0);
+  if (n < 0) {
+    console.log('Failed to set the vertex information');
+    return;
+  }
+
+  drawBox(gl, n, u_ModelMatrix, u_NormalMatrix, u_isLighting, 5);
+
+  modelMatrix = popMatrix();
 }
 
 function drawFloor(gl, u_ModelMatrix, u_NormalMatrix, u_isLighting){
@@ -2007,6 +2118,8 @@ function initTextures(gl){
   createTexture(gl, 'title.png', gl.TEXTURE2);
   createTexture(gl, 'whiteWall.jpg', gl.TEXTURE3);
   createTexture(gl, 'car.jpg', gl.TEXTURE4);
+  createTexture(gl, 'leaves.jpg', gl.TEXTURE5);
+  createTexture(gl, 'barell.jpg', gl.TEXTURE6);
   return true;
 }
 
