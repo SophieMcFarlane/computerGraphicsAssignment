@@ -12,7 +12,7 @@ The features I have implemented
 -	Ambient Lighting
 -	Point Lighting
 -	Diffuse Lighting
--	7 different textures
+-	6 different textures
 -	Colouring
 -	Opening/closing door
 -	Automatic moving wheels on car
