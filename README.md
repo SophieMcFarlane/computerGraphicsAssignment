@@ -5,7 +5,7 @@ I have enclosed a picture of flat white, named ‘flatWhite.jpg’
 
 To run: 
 
-Open flatWhite.html into Microsoft Edge
+Open flatWhite.html into Microsoft Edge,
 The webpage itself has all the instructions on how to use my model
 
 The features I have implemented
