@@ -2115,7 +2115,7 @@ function initTextures(gl){
   //Setup texture mappings
   createTexture(gl, 'wood.jpg', gl.TEXTURE0);
   createTexture(gl, 'pavement2.jpg', gl.TEXTURE1);
-  createTexture(gl, 'title.png', gl.TEXTURE2);
+  createTexture(gl, 'title2.png', gl.TEXTURE2);
   createTexture(gl, 'whiteWall.jpg', gl.TEXTURE3);
   createTexture(gl, 'car.jpg', gl.TEXTURE4);
   createTexture(gl, 'leaves.jpg', gl.TEXTURE5);
